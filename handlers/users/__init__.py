@@ -1,5 +1,6 @@
-from . import help
-from . import start
-from . import registration_handler
+from . import commands_handlers
+from . import registration_handlers
+from . import authorization_handlers
+from . import authenticated_menu_handlers
 
 from . import echo
