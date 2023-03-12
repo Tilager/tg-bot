@@ -3,6 +3,7 @@ from typing import List
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+from filters import IsEmployer
 from keyboards.inline import callback_datas
 from keyboards.inline.authenticated_keyboards import employer_kb
 from loader import dp, bot
@@ -11,7 +12,7 @@ from utils.db_api.services import jobs_service as j_ser
 from utils.db_api.services import employers_service as em_ser
 
 
-@dp.message_handler(text="Просмотреть мои вакансии")
+@dp.message_handler(IsEmployer(), text="Просмотреть мои вакансии")
 async def view_jobs(msg: types.Message):
     employer: EmployerModel = await em_ser.get_employer_by_telegram_id(msg.from_user.id)
     jobs: List[JobModel] = await j_ser.get_all_jobs_by_employer(employer.id)
@@ -24,7 +25,7 @@ async def view_jobs(msg: types.Message):
             await msg.answer(text=text, reply_markup=kb)
 
 
-@dp.callback_query_handler(callback_datas.job_cb.filter())
+@dp.callback_query_handler(IsEmployer(), callback_datas.job_cb.filter())
 async def view_all_jobs(callback: types.CallbackQuery, callback_data: dict, state: FSMContext):
     await state.update_data(job_id=int(callback_data.get("job_id")),
                             message_id=callback.message.message_id,

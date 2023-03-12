@@ -4,6 +4,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
+from filters import IsApplicant
 from keyboards.inline import callback_datas
 from keyboards.inline.authenticated_keyboards import applicant_kb
 from loader import dp
@@ -12,7 +13,7 @@ from utils.db_api.services import jobs_service as j_ser
 from utils.db_api.services import employers_service as em_ser
 
 
-@dp.message_handler(text="Просмотреть вакансии")
+@dp.message_handler(IsApplicant(), text="Просмотреть вакансии")
 async def view_all_jobs(msg: types.Message):
     jobs: List[JobModel] = await j_ser.get_all_jobs()
     if len(jobs) == 0:
@@ -24,7 +25,7 @@ async def view_all_jobs(msg: types.Message):
             await msg.answer(text=text, reply_markup=kb)
 
 
-@dp.callback_query_handler(callback_datas.view_job_cb.filter())
+@dp.callback_query_handler(IsApplicant(), callback_datas.view_job_cb.filter())
 async def get_employer_info(callback: CallbackQuery, callback_data: dict):
     employer: EmployerModel = await em_ser.get_employer_by_job_id(int(callback_data.get("job_id")))
     alert_text = await get_alert_text(employer)

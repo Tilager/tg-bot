@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
+from filters import IsEmployer
 from loader import dp
 from models import EmployerModel
 from states.job_states import Job
@@ -8,7 +9,7 @@ from utils.db_api.services import jobs_service as j_ser
 from utils.db_api.services import employers_service as em_ser
 
 
-@dp.message_handler(text="Добавить вакансию")
+@dp.message_handler(IsEmployer(), text="Добавить вакансию")
 async def add_job(msg: types.Message):
     await msg.answer("Введите должность.")
     await Job.post.set()

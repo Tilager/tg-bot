@@ -38,6 +38,11 @@ async def update_user_id(id: int, user_id: int):
     await user.update(user_id=user_id).apply()
 
 
+async def get_role_by_telegram_id(telegram_id: int):
+    user: UserModel = await get_by_telegram_id(telegram_id)
+    return user.role
+
+
 async def remove_user_id(user_id: int):
     user = await get_by_telegram_id(user_id)
 

@@ -1,9 +1,10 @@
 from aiogram import Dispatcher
 
 from loader import dp
-# from .is_admin import AdminFilter
+from .role_filters import IsEmployer
+from .role_filters import IsApplicant
 
 
 if __name__ == "filters":
-    # dp.filters_factory.bind(AdminFilter)
-    pass
+    dp.filters_factory.bind(IsEmployer)
+    dp.filters_factory.bind(IsApplicant)
