@@ -24,13 +24,13 @@ async def select_username_password(username: str, password: str) -> UserModel:
     return user
 
 
-async def get_by_user_id(user_id: int) -> UserModel:
+async def get_by_telegram_id(user_id: int) -> UserModel:
     user = await UserModel.query.where(UserModel.user_id == user_id).gino.first()
     return user
 
 
 async def update_user_id(id: int, user_id: int):
-    old_user = await get_by_user_id(user_id)
+    old_user = await get_by_telegram_id(user_id)
     user = await UserModel.get(id)
     if (old_user is not None) and old_user != user:
         await old_user.update(user_id=None).apply()
@@ -39,7 +39,7 @@ async def update_user_id(id: int, user_id: int):
 
 
 async def remove_user_id(user_id: int):
-    user = await get_by_user_id(user_id)
+    user = await get_by_telegram_id(user_id)
 
     if user is not None:
         await user.update(user_id=None).apply()

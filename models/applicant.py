@@ -13,7 +13,7 @@ class ApplicantModel(TimedBaseModel):
     patronymic = Column(String(80))
     date_of_birthday = Column(Date())
     phone = Column(String(15))
-    education = Column(String(80))
+    education = Column(String(500))
     drive_license = Column(Boolean())
     military_ticket = Column(Boolean())
     english = Column(Boolean())

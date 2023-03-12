@@ -133,6 +133,7 @@ async def passport_enter(msg: types.Message, state: FSMContext):
         await Employer.organization_name.set()
     else:
         await msg.answer("Введите паспорт формата (9011 567894).")
+        await Employer.passport.set()
 
 
 @dp.message_handler(state=Employer.organization_name)

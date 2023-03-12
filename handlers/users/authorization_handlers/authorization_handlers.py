@@ -1,6 +1,5 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardRemove
 
 from keyboards.default import start_keyboards
 from loader import dp
@@ -31,7 +30,14 @@ async def password_enter(msg: types.Message, state: FSMContext):
         await msg.answer("Пользователя с таким логином и паролем не существует!")
     else:
         await us_ser.update_user_id(user.id, msg.from_user.id)
+        kb = start_keyboards.not_auth_kb
+        match user.role:
+            case "Employer":
+                kb = start_keyboards.auth_employer_kb
 
-        await msg.answer("Вы успешно вошли.", reply_markup=start_keyboards.auth_kb)
+            case "Applicant":
+                kb = start_keyboards.auth_applicant_kb
+
+        await msg.answer("Вы успешно вошли.", reply_markup=kb)
 
     await state.finish()

@@ -22,12 +22,49 @@ async def addApplicant(name: str, surname: str, patronymic: str,
         raise UniqueViolationError
 
 
-async def update_FCs(id: int, FCs: list):
-    user = await ApplicantModel.get(id)
+async def get_applicant_by_user_id(user_id: int):
+    user = await ApplicantModel.query.where(ApplicantModel.user_id == user_id).gino.first()
+    return user
+
+
+async def update_FCs(user_id: int, FCs: list):
+    user = await get_applicant_by_user_id(user_id)
     surname, name, patronymic = FCs
     await user.update(name=name, surname=surname, patronymic=patronymic).apply()
+    return user
 
 
-async def update_birth(id: int, birth: datetime.date):
-    user = await ApplicantModel.get(id)
+async def update_birth(user_id: int, birth: datetime.date):
+    user = await get_applicant_by_user_id(user_id)
     await user.update(date_of_birthday=birth).apply()
+    return user
+
+
+async def update_phone(user_id: int, phone: str):
+    user = await get_applicant_by_user_id(user_id)
+    await user.update(phone=phone).apply()
+    return user
+
+
+async def update_education(user_id: int, education: str):
+    user = await get_applicant_by_user_id(user_id)
+    await user.update(education=education).apply()
+    return user
+
+
+async def update_drive_license(user_id: int, drive_license: bool):
+    user = await get_applicant_by_user_id(user_id)
+    await user.update(drive_license=drive_license).apply()
+    return user
+
+
+async def update_military_ticket(user_id: int, military_ticket: bool):
+    user = await get_applicant_by_user_id(user_id)
+    await user.update(military_ticket=military_ticket).apply()
+    return user
+
+
+async def update_english(user_id: int, english: bool):
+    user = await get_applicant_by_user_id(user_id)
+    await user.update(english=english).apply()
+    return user

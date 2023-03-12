@@ -19,11 +19,20 @@ async def bot_help(message: types.Message):
 
 @dp.message_handler(CommandStart())
 async def bot_start(message: types.Message):
-    user = await us_ser.get_by_user_id(message.from_user.id)
-    authenticated: bool = user is not None
+    user = await us_ser.get_by_telegram_id(message.from_user.id)
+    kb = start_keyboards.not_auth_kb
+
+    if user is not None:
+        match user.role:
+            case "Employer":
+                kb = start_keyboards.auth_employer_kb
+
+            case "Applicant":
+                kb = start_keyboards.auth_applicant_kb
+
     await message.answer(
         f"Здравствуйте, вас приветствует кадровое агенство 'Obair Aisling'.",
-        reply_markup=start_keyboards.not_auth_kb if not authenticated else start_keyboards.auth_kb)
+        reply_markup=kb)
 
 
 @dp.message_handler(Command("cancel"), state="*")
