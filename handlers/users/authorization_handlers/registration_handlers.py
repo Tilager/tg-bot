@@ -61,7 +61,7 @@ async def date_of_birthday_enter(msg: types.Message, state: FSMContext):
         today = datetime.date.today()
         birth = datetime.datetime.strptime(msg.text, "%d.%m.%Y").date()
         age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
-        if age > 18:
+        if age >= 18:
             await state.update_data(date_of_birthday=birth)
             await msg.answer("Введите ваш номер телефона.")
             await Employer.phone.set()

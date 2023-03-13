@@ -124,7 +124,7 @@ async def profile_edit_birth(msg: types.Message, state: FSMContext):
         today = datetime.date.today()
         birth = datetime.datetime.strptime(msg.text.strip(), "%d.%m.%Y").date()
         age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
-        if age > 18:
+        if age >= 18:
             user: UserModel = await us_ser.get_by_telegram_id(msg.from_user.id)
             user_after_update = None
 

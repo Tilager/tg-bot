@@ -12,7 +12,8 @@ from utils.db_api.services import user_service as us_ser
 async def bot_help(message: types.Message):
     text = ("Список команд: ",
             "/start - Начать диалог",
-            "/help - Получить справку")
+            "/help - Получить справку",
+            "/cancel - отменить ввод")
 
     await message.answer("\n".join(text))
 
