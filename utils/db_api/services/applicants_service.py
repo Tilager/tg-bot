@@ -3,12 +3,18 @@ import datetime
 from asyncpg import UniqueViolationError
 
 from models import ApplicantModel, UserModel
+from utils.db_api.services import user_service as us_ser
 
 
-async def addApplicant(name: str, surname: str, patronymic: str,
-                       date_of_birthday: datetime.date, phone: str, education: str,
-                       drive_license: bool, military_ticket: bool, english: bool,
-                       username: str, password: str, role: str):
+async def get_all_applicants():
+    applicants = await ApplicantModel.query.gino.all()
+    return applicants
+
+
+async def add_applicant(name: str, surname: str, patronymic: str,
+                        date_of_birthday: datetime.date, phone: str, education: str,
+                        drive_license: bool, military_ticket: bool, english: bool,
+                        username: str, password: str, role: str):
     try:
         user: UserModel = await UserModel.create(username=username, password=password,
                                                  role=role)
@@ -22,49 +28,55 @@ async def addApplicant(name: str, surname: str, patronymic: str,
         raise UniqueViolationError
 
 
-async def get_applicant_by_user_id(user_id: int):
-    user = await ApplicantModel.query.where(ApplicantModel.user_id == user_id).gino.first()
-    return user
+async def get_applicant_by_id(id: int | str):
+    applicant = await ApplicantModel.get(int(id))
+    return applicant
 
 
-async def update_FCs(user_id: int, FCs: list):
-    user = await get_applicant_by_user_id(user_id)
+async def get_applicant_by_telegram_id(telegram_id: int):
+    user = await us_ser.get_by_telegram_id(telegram_id)
+    applicant = await ApplicantModel.query.where(ApplicantModel.user_id == user.id).gino.first()
+    return applicant
+
+
+async def update_FCs(applicant_id: int, FCs: list):
+    applicant: ApplicantModel = await ApplicantModel.get(int(applicant_id))
     surname, name, patronymic = FCs
-    await user.update(name=name, surname=surname, patronymic=patronymic).apply()
-    return user
+    await applicant.update(name=name, surname=surname, patronymic=patronymic).apply()
+    return applicant
 
 
-async def update_birth(user_id: int, birth: datetime.date):
-    user = await get_applicant_by_user_id(user_id)
-    await user.update(date_of_birthday=birth).apply()
-    return user
+async def update_birth(applicant_id: int, birth: datetime.date):
+    applicant: ApplicantModel = await ApplicantModel.get(int(applicant_id))
+    await applicant.update(date_of_birthday=birth).apply()
+    return applicant
 
 
-async def update_phone(user_id: int, phone: str):
-    user = await get_applicant_by_user_id(user_id)
-    await user.update(phone=phone).apply()
-    return user
+async def update_phone(applicant_id: int, phone: str):
+    applicant: ApplicantModel = await ApplicantModel.get(int(applicant_id))
+    await applicant.update(phone=phone).apply()
+    return applicant
 
 
-async def update_education(user_id: int, education: str):
-    user = await get_applicant_by_user_id(user_id)
-    await user.update(education=education).apply()
-    return user
+async def update_education(applicant_id: int, education: str):
+    applicant: ApplicantModel = await ApplicantModel.get(int(applicant_id))
+    await applicant.update(education=education).apply()
+    return applicant
 
 
-async def update_drive_license(user_id: int, drive_license: bool):
-    user = await get_applicant_by_user_id(user_id)
-    await user.update(drive_license=drive_license).apply()
-    return user
+async def update_drive_license(applicant_id: int, drive_license: bool):
+    applicant: ApplicantModel = await ApplicantModel.get(int(applicant_id))
+    await applicant.update(drive_license=drive_license).apply()
+    return applicant
 
 
-async def update_military_ticket(user_id: int, military_ticket: bool):
-    user = await get_applicant_by_user_id(user_id)
-    await user.update(military_ticket=military_ticket).apply()
-    return user
+async def update_military_ticket(applicant_id: int, military_ticket: bool):
+    applicant: ApplicantModel = await ApplicantModel.get(int(applicant_id))
+    await applicant.update(military_ticket=military_ticket).apply()
+    return applicant
 
 
-async def update_english(user_id: int, english: bool):
-    user = await get_applicant_by_user_id(user_id)
-    await user.update(english=english).apply()
-    return user
+async def update_english(applicant_id: int, english: bool):
+    applicant: ApplicantModel = await ApplicantModel.get(int(applicant_id))
+    await applicant.update(english=english).apply()
+    return applicant

@@ -31,6 +31,12 @@ async def bot_start(message: types.Message):
             case "Applicant":
                 kb = start_keyboards.auth_applicant_kb
 
+            case "Admin":
+                kb = start_keyboards.auth_admin_kb
+
+            case _:
+                kb = None
+
     await message.answer(
         f"Здравствуйте, вас приветствует кадровое агенство 'Obair Aisling'.",
         reply_markup=kb)

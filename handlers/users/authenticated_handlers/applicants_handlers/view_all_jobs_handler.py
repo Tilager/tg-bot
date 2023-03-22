@@ -1,11 +1,9 @@
 from typing import List
 
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery
 
 from filters import IsApplicant
-from keyboards.default import start_keyboards
 from keyboards.inline import callback_datas
 from keyboards.inline.authenticated_keyboards import applicant_kb
 from loader import dp

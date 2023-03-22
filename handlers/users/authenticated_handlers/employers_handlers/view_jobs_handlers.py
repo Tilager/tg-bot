@@ -4,6 +4,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 
 from filters import IsEmployer
+from filters.role_filters import IsAdmin
 from keyboards.inline import callback_datas
 from keyboards.inline.authenticated_keyboards import employer_kb
 from loader import dp, bot
@@ -25,7 +26,7 @@ async def view_jobs(msg: types.Message):
             await msg.answer(text=text, reply_markup=kb)
 
 
-@dp.callback_query_handler(IsEmployer(), callback_datas.job_cb.filter())
+@dp.callback_query_handler(IsEmployer() | IsAdmin(), callback_datas.job_cb.filter())
 async def view_all_jobs(callback: types.CallbackQuery, callback_data: dict, state: FSMContext):
     await state.update_data(job_id=int(callback_data.get("job_id")),
                             message_id=callback.message.message_id,
@@ -67,7 +68,7 @@ async def view_all_jobs(callback: types.CallbackQuery, callback_data: dict, stat
     await callback.answer()
 
 
-@dp.message_handler(state="job:post")
+@dp.message_handler(IsEmployer() | IsAdmin(), state="job:post")
 async def job_edit_post(msg: types.Message, state: FSMContext):
     data = await state.get_data()
     job: JobModel = await j_ser.update_post(data.get("job_id"), msg.text)
@@ -78,7 +79,7 @@ async def job_edit_post(msg: types.Message, state: FSMContext):
     await state.finish()
 
 
-@dp.message_handler(state="job:salary")
+@dp.message_handler(IsEmployer() | IsAdmin(), state="job:salary")
 async def job_edit_salary(msg: types.Message, state: FSMContext):
     data = await state.get_data()
 
@@ -96,7 +97,7 @@ async def job_edit_salary(msg: types.Message, state: FSMContext):
     await state.finish()
 
 
-@dp.message_handler(state="job:chart")
+@dp.message_handler(IsEmployer() | IsAdmin(), state="job:chart")
 async def job_edit_chart(msg: types.Message, state: FSMContext):
     data = await state.get_data()
     job: JobModel = await j_ser.update_chart(data.get("job_id"), msg.text)
@@ -107,7 +108,7 @@ async def job_edit_chart(msg: types.Message, state: FSMContext):
     await state.finish()
 
 
-@dp.message_handler(state="job:hours")
+@dp.message_handler(IsEmployer() | IsAdmin(), state="job:hours")
 async def job_edit_hours(msg: types.Message, state: FSMContext):
     data = await state.get_data()
 
@@ -126,7 +127,7 @@ async def job_edit_hours(msg: types.Message, state: FSMContext):
     await state.finish()
 
 
-@dp.message_handler(state="job:drive_license")
+@dp.message_handler(IsEmployer() | IsAdmin(), state="job:drive_license")
 async def job_edit_drive_license(msg: types.Message, state: FSMContext):
     data = await state.get_data()
 
@@ -144,11 +145,11 @@ async def job_edit_drive_license(msg: types.Message, state: FSMContext):
     await edit_job_message(message_id=data.get("message_id"),
                            chat_id=data.get("chat_id"), job=job)
 
-    await msg.answer("Количество рабочих часов успешно обновлены.")
+    await msg.answer("Требование водительских прав успешно обновлено.")
     await state.finish()
 
 
-@dp.message_handler(state="job:military_ticket")
+@dp.message_handler(IsEmployer() | IsAdmin(), state="job:military_ticket")
 async def job_edit_military_ticket(msg: types.Message, state: FSMContext):
     data = await state.get_data()
 
@@ -166,11 +167,11 @@ async def job_edit_military_ticket(msg: types.Message, state: FSMContext):
     await edit_job_message(message_id=data.get("message_id"),
                            chat_id=data.get("chat_id"), job=job)
 
-    await msg.answer("Количество рабочих часов успешно обновлены.")
+    await msg.answer("Требование военного билета успешно обновлено.")
     await state.finish()
 
 
-@dp.message_handler(state="job:english")
+@dp.message_handler(IsEmployer() | IsAdmin(), state="job:english")
 async def job_edit_english(msg: types.Message, state: FSMContext):
     data = await state.get_data()
 
@@ -188,12 +189,15 @@ async def job_edit_english(msg: types.Message, state: FSMContext):
     await edit_job_message(message_id=data.get("message_id"),
                            chat_id=data.get("chat_id"), job=job)
 
-    await msg.answer("Количество рабочих часов успешно обновлены.")
+    await msg.answer("Требование знание английского успешно обновлено.")
     await state.finish()
 
 
 async def get_jobs_text(job: JobModel):
-    return f"Должность - {job.post}\n" \
+    employer: EmployerModel = await em_ser.get_employer_by_job_id(job.id)
+    return f"Название организации - {employer.organization_name}\n" \
+           f"Номер телефона - {employer.phone}\n" \
+           f"Должность - {job.post}\n" \
            f"Зарплата - {job.salary}\n" \
            f"График - {job.chart}\n" \
            f"Количество рабочих часов в неделю - {job.hours_in_week}\n" \

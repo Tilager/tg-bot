@@ -2,18 +2,22 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from keyboards.inline import callback_datas
 
-edit_profile_kb = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Изм. ФИО",
-                          callback_data=callback_datas.profile_cb.new("FCs")),
-     InlineKeyboardButton(text="Изм. дату рождения",
-                          callback_data=callback_datas.profile_cb.new("birth"))],
-    [InlineKeyboardButton(text="Изм. номер телефона",
-                          callback_data=callback_datas.profile_cb.new("phone"))],
-    [InlineKeyboardButton(text="Изм. паспорт",
-                          callback_data=callback_datas.profile_cb.new("passport")),
-     InlineKeyboardButton(text="Изм. название организации",
-                          callback_data=callback_datas.profile_cb.new("organization"))]
-])
+
+async def create_edit_profile_kb(employer_id: int):
+    edit_profile_kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Изм. ФИО",
+                              callback_data=callback_datas.profile_cb.new("FCs", employer_id, "Employer")),
+         InlineKeyboardButton(text="Изм. дату рождения",
+                              callback_data=callback_datas.profile_cb.new("birth", employer_id, "Employer"))],
+        [InlineKeyboardButton(text="Изм. номер телефона",
+                              callback_data=callback_datas.profile_cb.new("phone", employer_id, "Employer"))],
+        [InlineKeyboardButton(text="Изм. паспорт",
+                              callback_data=callback_datas.profile_cb.new("passport", employer_id, "Employer")),
+         InlineKeyboardButton(text="Изм. название организации",
+                              callback_data=callback_datas.profile_cb.new("organization", employer_id, "Employer"))]
+    ])
+
+    return edit_profile_kb
 
 
 async def create_edit_job_kb(job_id: int):

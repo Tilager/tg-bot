@@ -6,16 +6,29 @@ from aiogram.dispatcher import FSMContext
 
 from asyncpg import UniqueViolationError
 
-from keyboards.inline.registration_keyboards import kb
+from data import config
+from keyboards.inline import registration_keyboards
 from loader import dp
 from states.registration_states import Employer, User, Applicant
 from utils.db_api.services import employers_service as em_ser
 from utils.db_api.services import applicants_service as ap_ser
+from utils.db_api.services import user_service as us_ser
 
 
 @dp.message_handler(text="Зарегистрироваться")
 async def login(msg: types.Message):
-    await msg.answer(text="Кем вы являетесь?", reply_markup=kb)
+    if str(msg.chat.id) in config.ADMINS:
+        await msg.answer(text="Кем вы являетесь?", reply_markup=registration_keyboards.reg_admin_kb)
+    else:
+        await msg.answer(text="Кем вы являетесь?", reply_markup=registration_keyboards.reg_kb)
+
+
+@dp.callback_query_handler(text="reg:admin")
+async def register_employer(call: types.CallbackQuery, state: FSMContext):
+    await state.update_data(role="Admin")
+    await call.answer()
+    await call.message.answer("Введите желаемый логин.")
+    await User.username.set()
 
 
 @dp.callback_query_handler(text="reg:employer")
@@ -98,7 +111,7 @@ async def username_enter(msg: types.Message, state: FSMContext):
 
     await msg.answer("Введите желаемый пароль.")
 
-    await Employer.password.set()
+    await User.password.set()
 
 
 @dp.message_handler(state=User.password)
@@ -112,7 +125,10 @@ async def password_enter(msg: types.Message, state: FSMContext):
                 await em_ser.add_employer(**data)
 
             case "Applicant":
-                await ap_ser.addApplicant(**data)
+                await ap_ser.add_applicant(**data)
+
+            case "Admin":
+                await us_ser.add_user(**data)
 
     except UniqueViolationError:
         await msg.answer("Пользователь с таким именем уже существует. Введите новое имя!")

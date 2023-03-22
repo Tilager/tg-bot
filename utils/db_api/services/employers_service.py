@@ -21,9 +21,9 @@ async def add_employer(name: str, surname: str, patronymic: str,
         raise UniqueViolationError
 
 
-async def get_employer_by_user_id(user_id: int):
-    user = await EmployerModel.query.where(EmployerModel.user_id == user_id).gino.first()
-    return user
+async def get_employer_by_id(id: int | str):
+    employer = await EmployerModel.get(int(id))
+    return employer
 
 
 async def get_employer_by_telegram_id(telegram_id: int):
@@ -38,32 +38,37 @@ async def get_employer_by_job_id(job_id: int):
     return employer
 
 
-async def update_FCs(user_id: int, FCs: list):
-    user = await get_employer_by_user_id(user_id)
+async def get_all_employers():
+    employers = await EmployerModel.query.gino.all()
+    return employers
+
+
+async def update_FCs(employer_id: int, FCs: list):
+    employer = await EmployerModel.get(int(employer_id))
     surname, name, patronymic = FCs
-    await user.update(name=name, surname=surname, patronymic=patronymic).apply()
-    return user
+    await employer.update(name=name, surname=surname, patronymic=patronymic).apply()
+    return employer
 
 
-async def update_birth(user_id: int, birth: datetime.date):
-    user = await get_employer_by_user_id(user_id)
-    await user.update(date_of_birthday=birth).apply()
-    return user
+async def update_birth(employer_id: int, birth: datetime.date):
+    employer = await EmployerModel.get(int(employer_id))
+    await employer.update(date_of_birthday=birth).apply()
+    return employer
 
 
-async def update_phone(user_id: int, phone: str):
-    user = await get_employer_by_user_id(user_id)
-    await user.update(phone=phone).apply()
-    return user
+async def update_phone(employer_id: int, phone: str):
+    employer = await EmployerModel.get(int(employer_id))
+    await employer.update(phone=phone).apply()
+    return employer
 
 
-async def update_passport(user_id: int, passport: str):
-    user = await get_employer_by_user_id(user_id)
-    await user.update(passport=passport).apply()
-    return user
+async def update_passport(employer_id: int, passport: str):
+    employer = await EmployerModel.get(int(employer_id))
+    await employer.update(passport=passport).apply()
+    return employer
 
 
-async def update_organization(user_id: int, organization: str):
-    user = await get_employer_by_user_id(user_id)
-    await user.update(organization_name=organization).apply()
-    return user
+async def update_organization(employer_id: int, organization: str):
+    employer = await EmployerModel.get(int(employer_id))
+    await employer.update(organization_name=organization).apply()
+    return employer

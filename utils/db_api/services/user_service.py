@@ -24,8 +24,13 @@ async def select_username_password(username: str, password: str) -> UserModel:
     return user
 
 
-async def get_by_telegram_id(user_id: int) -> UserModel:
-    user = await UserModel.query.where(UserModel.user_id == user_id).gino.first()
+async def get_by_telegram_id(telegram_id: int) -> UserModel:
+    user = await UserModel.query.where(UserModel.user_id == telegram_id).gino.first()
+    return user
+
+
+async def get_by_id(id: int):
+    user = await UserModel.get(int(id))
     return user
 
 
@@ -40,6 +45,9 @@ async def update_user_id(id: int, user_id: int):
 
 async def get_role_by_telegram_id(telegram_id: int):
     user: UserModel = await get_by_telegram_id(telegram_id)
+    if user is None:
+        return None
+
     return user.role
 
 
